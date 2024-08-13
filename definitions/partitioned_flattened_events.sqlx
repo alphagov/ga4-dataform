@@ -9,6 +9,14 @@ config {
     }  
 }
 
+pre_operations {
+  DECLARE partition_id TIMESTAMP;
+  SET partition_id = (
+    SELECT PARSE_TIMESTAMP("%Y%m%d",partition_id)
+    FROM  ${ref("ga4_process_partition")} 
+    ); 
+}
+
  
 WITH 
 cte1 AS ( 
@@ -200,7 +208,7 @@ cte1 AS (
 
     
     FROM ${ref("partitioned_events")}
-    WHERE event_date = TIMESTAMP(date_sub(CURRENT_DATE(), INTERVAL 1 DAY) ) 
+    WHERE event_date = partition_id 
     -- ${when(incremental(), 
     --     `WHERE event_date = TIMESTAMP(date_sub(CURRENT_DATE(), INTERVAL 1 DAY) )
     --     AND event_date NOT IN (SELECT event_date FROM ${self()} WHERE event_date < CURRENT_TIMESTAMP())`
@@ -218,7 +226,7 @@ cte2 AS (
       items.item_list_name 
       
     FROM ${ref("partitioned_events")}, UNNEST(items) AS items 
-    WHERE event_date = TIMESTAMP(date_sub(CURRENT_DATE(), INTERVAL 1 DAY) )
+    WHERE event_date = partition_id
 
     -- ${when(incremental(), 
     --     `WHERE event_date = TIMESTAMP(date_sub(CURRENT_DATE(), INTERVAL 1 DAY) )
@@ -241,7 +249,7 @@ cte3 AS (
         
     FROM ${ref("partitioned_events")}, UNNEST(items) AS items 
     WHERE event_name = 'select_item'
-    AND event_date = TIMESTAMP(date_sub(CURRENT_DATE(), INTERVAL 1 DAY) )
+    AND event_date = partition_id
 
     -- ${when(incremental(), 
     --     `AND event_date = TIMESTAMP(date_sub(CURRENT_DATE(), INTERVAL 1 DAY) )

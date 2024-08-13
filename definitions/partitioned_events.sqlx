@@ -7,15 +7,16 @@ config {
   }
 }
 
+pre_operations {
+  DECLARE table_suffix STRING DEFAULT "YYYYMMDD";
+  SET table_suffix = (
+    SELECT table_name
+    FROM  ${ref("ga4_process_shard")} 
+    ); 
+}
 
 SELECT
  PARSE_TIMESTAMP("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
 FROM ${ref("events_*")}
-WHERE _TABLE_SUFFIX NOT LIKE '%intraday%'
-AND _TABLE_SUFFIX NOT LIKE '%fresh%'
-
-${when(incremental(), 
-`AND _TABLE_SUFFIX = CAST(FORMAT_DATE('%Y%m%d',DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)) AS STRING)
-AND _TABLE_SUFFIX NOT IN (SELECT FORMAT_DATE('%Y%m%d',event_date) FROM ${self()} WHERE event_date < CURRENT_TIMESTAMP())`
-) }
+WHERE _TABLE_SUFFIX = table_suffix
