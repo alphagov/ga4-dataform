@@ -2,6 +2,7 @@ config {
   type: "table",
   database: "gds-bq-reporting",
   schema: "processing",
+  dependencies: [ "partitioned_events"]
 }
 
 
