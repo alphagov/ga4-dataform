@@ -16,7 +16,7 @@ pre_operations {
 }
 
 SELECT
- PARSE_TIMESTAMP("%Y%m%d", event_date) AS event_date,
+ PARSE_DATE("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
 FROM ${ref("events_*")}
 WHERE _TABLE_SUFFIX = table_suffix
