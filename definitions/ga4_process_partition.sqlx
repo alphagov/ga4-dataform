@@ -14,5 +14,6 @@ WHERE partition_id NOT IN (
   WHERE table_name = 'partitioned_flattened_events'
   )
 AND table_name = "partitioned_events"
+AND NOT partition_id = "__NULL__"
 ORDER BY 1 DESC
 LIMIT 1
