@@ -202,9 +202,12 @@ cte1 AS (
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'viewport_size') AS viewport_size,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'batch_page_id') AS batch_page_id,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'batch_ordering_id') AS batch_ordering_id,
+        batch_event_index,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'timestamp') AS timestamp,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'copy_length') AS copy_length,
-        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'govuk_gem_version') AS govuk_gem_version
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'govuk_gem_version') AS govuk_gem_version,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'global_bar') AS global_bar,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'emergency_banner') AS emergency_banner
 
     
     FROM ${ref("partitioned_events")}
