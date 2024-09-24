@@ -166,7 +166,7 @@ cte1 AS (
         LAST_VALUE(( SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'campaign_id') IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_location'), ( SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'ga_session_id') ORDER BY event_timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS campaign_id,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'index_section') AS index_section ,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'index_section_total') AS index_section_total,
-        (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'tool_name') AS tool_name,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'tool_name') AS tool_name,
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'response') AS response,
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'ab_test') AS ab_test,
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'navigation_list_type') AS navigation_list_type,
