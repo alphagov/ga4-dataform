@@ -6,11 +6,5 @@ permissions:
 
 jobs:
   dependency-review:
-    runs-on: ubuntu-latest
-    steps:
-      # - name: 'Checkout Repository'
-      #   uses: actions/checkout@v4
-      # - name: 'Dependency Review'
-      #   uses: actions/dependency-review-action@v4
-      - name: 'Dependency Review scan'
-        uses: alphagov/govuk-infrastructure/.github/workflows/dependency-review.yml@main
+    name: 'Dependency Review scan'
+    uses: alphagov/govuk-infrastructure/.github/workflows/dependency-review.yml@main
