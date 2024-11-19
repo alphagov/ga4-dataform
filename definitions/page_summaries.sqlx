@@ -1,0 +1,77 @@
+config {
+    type: "incremental",
+    database: "ga4-analytics-352613",
+    schema: "flattened_dataset",
+    bigquery: {
+        partitionBy: "DATE(event_date)",
+        requirePartitionFilter : true,
+    }  
+}
+
+pre_operations {
+  DECLARE partition_id DATE;
+  SET partition_id = (
+    SELECT PARSE_DATE("%Y%m%d",partition_id)
+    FROM  ${ref("page_summary_partition")} 
+    ); 
+}
+
+WITH
+  cte1 AS (
+  SELECT
+    event_date,
+    unique_session_ID,
+    cleaned_page_location,
+    event_timestamp,
+    event_name,
+    entrances,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS pageviews,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS sessions,
+    IF(event_name = "search",unique_session_ID,NULL) AS searches,
+    IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
+    IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
+    IF(event_name = "page_view" AND category='mobile',unique_session_ID,NULL) AS mobile_sessions,
+  FROM
+    ${ref("partitioned_flattened_events")}
+  WHERE
+    event_date = partition_id ),
+  
+  cte2 AS (
+  SELECT
+    unique_session_ID,
+    event_name,
+    MAX(event_timestamp) AS max_timestamp
+  FROM
+    cte1
+  WHERE
+    event_name = "page_view"
+  GROUP BY
+    1,
+    2 ),
+  
+  cte3 AS (
+  SELECT
+    cte1.*,
+    cte2.unique_session_ID AS exits
+  FROM
+    cte1
+  LEFT JOIN
+    cte2
+  ON
+    cte1.unique_session_ID = cte2.unique_session_ID
+    AND cte1.event_name = cte2.event_name
+    AND cte1.event_timestamp = cte2.max_timestamp)
+
+SELECT 
+    event_date,
+    cleaned_page_location,
+    COUNT(pageviews) AS pageviews,
+    COUNT(DISTINCT sessions) AS sessions,
+    SUM(entrances) AS entrances,
+    COUNT(exits) AS exits,
+    COUNT(searches) AS searches,
+    COUNT(useful_yes) AS useful_yes,
+    COUNT(useful_no) AS useful_no,
+    COUNT(DISTINCT mobile_sessions) AS mobile_sessions
+FROM cte3
+GROUP BY ALL
