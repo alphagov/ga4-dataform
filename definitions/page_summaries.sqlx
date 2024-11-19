@@ -12,7 +12,7 @@ pre_operations {
   DECLARE partition_id DATE;
   SET partition_id = (
     SELECT PARSE_DATE("%Y%m%d",partition_id)
-    FROM  ${ref("ga4_process_partition")} 
+    FROM  ${ref("page_summary_partition")} 
     ); 
 }
 
