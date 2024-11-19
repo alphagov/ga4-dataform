@@ -25,12 +25,12 @@ WITH
     event_timestamp,
     event_name,
     entrances,
-    IF(event_name = "page_view",unique_session_ID,'') AS pageviews,
-    IF(event_name = "page_view",unique_session_ID,'') AS sessions,
-    IF(event_name = "search",unique_session_ID,'') AS searches,
-    IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,'') AS useful_yes,
-    IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,'') AS useful_no,
-    IF(event_name = "page_view" AND category='mobile',unique_session_ID,'') AS mobile_sessions,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS pageviews,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS sessions,
+    IF(event_name = "search",unique_session_ID,NULL) AS searches,
+    IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
+    IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
+    IF(event_name = "page_view" AND category='mobile',unique_session_ID,NULL) AS mobile_sessions,
   FROM
     ${ref("partitioned_flattened_events")}
   WHERE
