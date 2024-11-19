@@ -26,11 +26,10 @@ WITH
     event_name,
     entrances,
     IF(event_name = "page_view",unique_session_ID,NULL) AS pageviews,
-    IF(event_name = "page_view",unique_session_ID,NULL) AS sessions,
     IF(event_name = "search",unique_session_ID,NULL) AS searches,
     IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
     IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
-    IF(event_name = "page_view" AND category='mobile',unique_session_ID,NULL) AS mobile_sessions,
+    IF(category='mobile',unique_session_ID,NULL) AS mobile_sessions,
   FROM
     ${ref("partitioned_flattened_events")}
   WHERE
@@ -66,7 +65,7 @@ SELECT
     event_date,
     cleaned_page_location,
     COUNT(pageviews) AS pageviews,
-    COUNT(DISTINCT sessions) AS sessions,
+    COUNT(DISTINCT unique_session_ID) AS sessions,
     SUM(entrances) AS entrances,
     COUNT(exits) AS exits,
     COUNT(searches) AS searches,
