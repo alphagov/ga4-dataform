@@ -65,6 +65,7 @@ SELECT
     event_date,
     cleaned_page_location,
     COUNT(pageviews) AS pageviews,
+    COUNT(DISTINCT pageviews) AS unique_pageviews,
     COUNT(DISTINCT unique_session_ID) AS sessions,
     SUM(entrances) AS entrances,
     COUNT(exits) AS exits,
