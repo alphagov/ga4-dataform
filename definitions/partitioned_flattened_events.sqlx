@@ -207,7 +207,11 @@ cte1 AS (
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'copy_length') AS copy_length,
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'govuk_gem_version') AS govuk_gem_version,
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'global_bar') AS global_bar,
-        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'emergency_banner') AS emergency_banner
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'emergency_banner') AS emergency_banner,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_tool_name') AS page_tool_name,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'autocomplete_input') AS autocomplete_input,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'autocomplete_suggestions') AS autocomplete_suggestions,
+        (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'autocomplete_count') AS autocomplete_count
 
     
     FROM ${ref("partitioned_events")}
