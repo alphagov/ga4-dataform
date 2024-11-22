@@ -303,5 +303,3 @@ final_cte AS (
         AND a.ga_session_number=b.ga_session_number) 
 
 SELECT DISTINCT * FROM final_cte
-
-
