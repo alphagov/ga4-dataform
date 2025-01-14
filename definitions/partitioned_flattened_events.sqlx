@@ -213,7 +213,8 @@ cte1 AS (
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'autocomplete_count') AS autocomplete_count,
         (SELECT COALESCE((SELECT value.string_value FROM UNNEST(event_params) WHERE KEY = 'autocomplete_suggestions'),CAST((SELECT value.int_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_suggestions') AS STRING))) AS autocomplete_suggestions,
         (SELECT COALESCE((SELECT value.string_value FROM UNNEST(event_params) WHERE KEY = 'autocomplete_input'),CAST((SELECT value.int_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_input') AS STRING))) AS autocomplete_input,
-        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'canonical_url') AS canonical_url
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'canonical_url') AS canonical_url,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'traffic_type') AS traffic_type
     
     FROM ${ref("partitioned_events")}
     WHERE event_date = partition_id 
