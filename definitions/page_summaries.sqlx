@@ -33,7 +33,8 @@ WITH
   FROM
     ${ref("partitioned_flattened_events")}
   WHERE
-    event_date = partition_id ),
+    event_date = partition_id
+    AND NOT status_code BETWEEN 400 AND 599 ),
   
   cte2 AS (
   SELECT
