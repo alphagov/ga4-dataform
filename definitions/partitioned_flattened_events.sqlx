@@ -29,7 +29,7 @@ cte1 AS (
         CONCAT(user_pseudo_id, ( SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id')) AS unique_session_id, 
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_title') AS page_title, 
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_location') AS page_location, 
-        SPLIT(SPLIT(REGEXP_REPLACE(( SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_location'), 'https://www.gov.uk', ''),'?')[SAFE_OFFSET(0)],'#')[SAFE_OFFSET(0)] AS cleaned_page_location, 
+        (COALESCE((REGEXP_REPLACE((SELECT value.string_value FROM UNNEST(event_params) WHERE KEY = 'canonical_url'), 'https://www.gov.uk', '')), (SPLIT(SPLIT(REGEXP_REPLACE((SELECT value.string_value FROM UNNEST(event_params) WHERE KEY = 'page_location'), 'https://www.gov.uk', ''),'?')[SAFE_OFFSET(0)],'#')[SAFE_OFFSET(0)]))) AS cleaned_page_location, 
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id') AS ga_sessionid, 
         (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_number') AS ga_session_number, 
         LAST_VALUE(( SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'primary_publishing_organisation') IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, 
