@@ -34,7 +34,8 @@ WITH
     ${ref("partitioned_flattened_events")}
   WHERE
     event_date = partition_id
-    AND NOT status_code BETWEEN 400 AND 599 ),
+    AND NOT status_code BETWEEN 400 AND 599
+    AND NOT REGEXP_CONTAINS(cleaned_page_location, "https:\\/\\/|^/www\\.\\w|\\s|\\p{Han}") ),
   
   cte2 AS (
   SELECT
