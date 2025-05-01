@@ -69,11 +69,11 @@ SELECT
     COUNT(pageviews) AS pageviews,
     COUNT(DISTINCT pageviews) AS unique_pageviews,
     COUNT(DISTINCT unique_session_ID) AS sessions,
+    COUNT(DISTINCT mobile_sessions) AS mobile_sessions,
     SUM(entrances) AS entrances,
     COUNT(exits) AS exits,
     COUNT(searches) AS searches,
     COUNT(useful_yes) AS useful_yes,
-    COUNT(useful_no) AS useful_no,
-    COUNT(DISTINCT mobile_sessions) AS mobile_sessions
+    COUNT(useful_no) AS useful_no
 FROM cte3
 GROUP BY ALL
