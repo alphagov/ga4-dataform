@@ -8,8 +8,3 @@ jobs:
   dependency-review:
     name: 'Dependency Review scan'
     uses: alphagov/govuk-infrastructure/.github/workflows/dependency-review.yml@main
-  codeql-sast:
-    name: CodeQL SAST scan
-    uses: alphagov/govuk-infrastructure/.github/workflows/codeql-analysis.yml@main
-    permissions:
-      security-events: write
