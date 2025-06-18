@@ -49,7 +49,7 @@ WITH
   GROUP BY
     1,
     2 ),
-  
+
   cte3 AS (
   SELECT
     cte1.*,
