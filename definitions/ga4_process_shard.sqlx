@@ -7,13 +7,13 @@ config {
 
 SELECT REPLACE(table_name,'events_','') AS table_name
 FROM `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.TABLES`
-WHERE REPLACE(table_name,'events_','') NOT IN (
+WHERE table_name NOT LIKE "%intraday%"
+AND table_name NOT LIKE "%fresh%"
+AND table_name NOT LIKE "%partitioned%"
+AND REPLACE(table_name,'events_','') NOT IN (
   SELECT partition_id 
   FROM `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.PARTITIONS`
   WHERE table_name = 'partitioned_events'
   )
-AND table_name NOT LIKE "%intraday%"
-AND table_name NOT LIKE "%fresh%"
-AND table_name NOT LIKE "%partitioned%"
 ORDER BY 1 DESC
 LIMIT 1

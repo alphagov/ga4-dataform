@@ -8,12 +8,12 @@ config {
 
 SELECT partition_id
 FROM `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.PARTITIONS`
-WHERE partition_id NOT IN (
+WHERE table_name = "partitioned_events"
+AND NOT partition_id = "__NULL__"
+AND partition_id NOT IN (
   SELECT partition_id 
   FROM `ga4-analytics-352613.flattened_dataset.INFORMATION_SCHEMA.PARTITIONS`
   WHERE table_name = 'page_summaries'
   )
-AND table_name = "partitioned_events"
-AND NOT partition_id = "__NULL__"
 ORDER BY 1 DESC
 LIMIT 1
