@@ -3,7 +3,7 @@ config {
     database: "ga4-analytics-352613",
     schema: "flattened_dataset",
     bigquery: {
-        partitionBy: "DATE(event_date)",
+        partitionBy: "event_date",
         requirePartitionFilter : true,
         clusterBy: ["event_name"]
     }  
