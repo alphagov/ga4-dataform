@@ -232,8 +232,8 @@ cte2 AS (
      (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_number') AS ga_session_number,
      (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'timestamp') AS timestamp,
      (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'batch_event_index') AS batch_event_index,
-     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_url') AS link_url
-     items.item_list_name,
+     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_url') AS link_url,
+     items.item_list_name
      
     
    FROM ${ref("partitioned_events")}, UNNEST(items) AS items
