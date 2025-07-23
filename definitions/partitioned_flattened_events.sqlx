@@ -230,6 +230,9 @@ cte2 AS (
      event_timestamp,
      CONCAT(user_pseudo_id, (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id')) AS unique_session_id,
      (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_number') AS ga_session_number,
+     (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'timestamp') AS timestamp,
+     batch_event_index,
+     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_url') AS link_url,
      items.item_list_name
      
     
@@ -250,6 +253,9 @@ cte3 AS (
        event_timestamp,
        CONCAT(user_pseudo_id, (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id')) AS unique_session_id,
        (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_number') AS ga_session_number,
+       (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'timestamp') AS timestamp,
+       batch_event_index,
+       (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_url') AS link_url,
        items.item_id,
        item_name,
        items.item_list_index,
@@ -282,7 +288,10 @@ cte4 AS (
        AND a.event_timestamp=b.event_timestamp
        AND a.unique_session_id=b.unique_session_id
        AND a.ga_session_number=b.ga_session_number
-   GROUP BY a.event_date, A.user_pseudo_id, A.event_name, a.event_timestamp, a.unique_session_id, a.ga_session_number, a.item_list_name, b.item_id, b.item_name, b.item_list_index, b.item_content_id
+       AND COALESCE(a.timestamp, 0)=COALESCE(b.timestamp, 0)
+       AND COALESCE(a.batch_event_index, 0)=COALESCE(b.batch_event_index, 0)
+       AND COALESCE(a.link_url, " ") = COALESCE(b.link_url,  " ")
+   GROUP BY a.event_date, A.user_pseudo_id, A.event_name, a.event_timestamp, a.unique_session_id, a.ga_session_number, a.timestamp, a.batch_event_index, a.link_url, a.item_list_name, b.item_id, b.item_name, b.item_list_index, b.item_content_id
 ),
 
 final_cte AS (
@@ -302,6 +311,9 @@ final_cte AS (
        AND a.event_timestamp=b.event_timestamp
        AND a.unique_session_id=b.unique_session_id
        AND a.ga_session_number=b.ga_session_number
+       AND COALESCE(a.timestamp, 0)=COALESCE(b.timestamp, 0)
+       AND COALESCE(a.batch_event_index, 0)=COALESCE(b.batch_event_index, 0)
+       AND COALESCE(a.link_url, " ") = COALESCE(b.link_url,  " ")
 )
 
 SELECT DISTINCT * FROM final_cte
