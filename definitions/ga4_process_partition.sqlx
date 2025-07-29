@@ -7,7 +7,7 @@ config {
 
 
 SELECT partition_id
-FROM `ga4-analytics-352613.analytics_${dataform.projectConfig.schemaSuffix}.INFORMATION_SCHEMA.PARTITIONS`
+FROM `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.PARTITIONS`
 WHERE table_name = "partitioned_events"
 AND NOT partition_id = "__NULL__"
 AND partition_id NOT IN (
@@ -17,5 +17,3 @@ AND partition_id NOT IN (
   )
 ORDER BY 1 DESC
 LIMIT 1
-
-
