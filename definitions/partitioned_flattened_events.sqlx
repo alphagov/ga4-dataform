@@ -207,7 +207,8 @@ cte1 AS (
        (SELECT COALESCE((SELECT value.string_value FROM UNNEST(event_params) WHERE KEY = 'autocomplete_suggestions'),CAST((SELECT value.int_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_suggestions') AS STRING), CAST((SELECT value.double_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_suggestions') AS STRING))) AS autocomplete_suggestions,
        (SELECT COALESCE((SELECT value.string_value FROM UNNEST(event_params) WHERE KEY = 'autocomplete_input'),CAST((SELECT value.int_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_input') AS STRING), CAST((SELECT value.double_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_input') AS STRING))) AS autocomplete_input,
        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'canonical_url') AS canonical_url,
-       (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'traffic_type') AS traffic_type
+       (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'traffic_type') AS traffic_type,
+       (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'discovery_engine_attribution_token') AS discovery_engine_attribution_token
   
 
   
