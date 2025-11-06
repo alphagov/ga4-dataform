@@ -11,7 +11,7 @@ config {
 pre_operations {
   DECLARE partition_id DATE;
   SET partition_id = (
-    SELECT PARSE_DATE("%Y%m%d",partition_id)
+    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d",'19000101'))
     FROM  ${ref("page_summary_partition")} 
     ); 
 }
