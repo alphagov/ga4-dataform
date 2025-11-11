@@ -1,0 +1,10 @@
+config {
+  type: "table",
+  database: "gds-bq-processing",
+  schema: "govuk_ga4_processing",
+  dependencies: [ "ga4_cleaning"]
+}
+
+SELECT 
+  *
+FROM ${ref("ga4_cleaning")}

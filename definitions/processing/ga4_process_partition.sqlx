@@ -1,7 +1,7 @@
 config {
   type: "table",
-  database: "gds-bq-reporting",
-  schema: "processing",
+  database: "gds-bq-processing",
+  schema: "govuk_ga4_processing",
   dependencies: [ "partitioned_events"]
 }
 
