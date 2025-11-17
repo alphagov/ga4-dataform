@@ -12,8 +12,8 @@ SELECT
    b.item_list_index ,
    b.item_content_id
       
-FROM ${ref("ga4_flattening_2")} A
-LEFT JOIN ${ref("ga4_flattening_3")} B
+FROM ${ref("ga4_flattening_2")} a
+LEFT JOIN ${ref("ga4_flattening_3")} b
    ON a.event_date=b.event_date
    AND a.user_pseudo_id=b.user_pseudo_id
    AND a.event_name=b.event_name
@@ -23,5 +23,5 @@ LEFT JOIN ${ref("ga4_flattening_3")} B
    AND COALESCE(a.timestamp, 0)=COALESCE(b.timestamp, 0)
    AND COALESCE(a.batch_event_index, 0)=COALESCE(b.batch_event_index, 0)
    AND COALESCE(a.link_url, " ") = COALESCE(b.link_url,  " ")
-GROUP BY a.event_date, A.user_pseudo_id, A.event_name, a.event_timestamp, a.unique_session_id, a.ga_session_number, a.timestamp, a.batch_event_index, a.link_url, a.item_list_name, b.item_id, b.item_name, b.item_list_index, b.item_content_id
+GROUP BY a.event_date, a.user_pseudo_id, a.event_name, a.event_timestamp, a.unique_session_id, a.ga_session_number, a.timestamp, a.batch_event_index, a.link_url, a.item_list_name, b.item_id, b.item_name, b.item_list_index, b.item_content_id
 
