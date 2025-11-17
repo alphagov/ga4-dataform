@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  database: "gds-bq-processing",
+  schema: "govuk_ga4_processing",
+  dependencies: [ "partitioned_events"]
+}
+
+WITH final_cte AS (
+   SELECT
+       a.*,
+       b.item_list_name,
+       b.item_id,
+       b.item_name,
+       b.item_list_index ,
+       b.item_content_id
+          
+   FROM ${ref("ga4_flattening_1")} a
+   LEFT JOIN ${ref("ga4_flattening_4")} b
+       ON a.event_date=b.event_date
+       AND a.user_pseudo_id=b.user_pseudo_id
+       AND a.event_name=b.event_name
+       AND a.event_timestamp=b.event_timestamp
+       AND a.unique_session_id=b.unique_session_id
+       AND a.ga_session_number=b.ga_session_number
+       AND COALESCE(a.timestamp, 0)=COALESCE(b.timestamp, 0)
+       AND COALESCE(a.batch_event_index, 0)=COALESCE(b.batch_event_index, 0)
+       AND COALESCE(a.link_url, " ") = COALESCE(b.link_url,  " ")
+)
+
+SELECT DISTINCT * FROM final_cte
