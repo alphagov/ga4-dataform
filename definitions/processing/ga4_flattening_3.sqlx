@@ -1,0 +1,34 @@
+config {
+  type: "table",
+  database: "gds-bq-processing",
+  schema: "govuk_ga4_processing",
+  dependencies: [ "partitioned_events"]
+}
+
+pre_operations {
+  DECLARE partition_id DATE;
+  SET partition_id = (
+    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d",'19000101'))
+    FROM  ${ref("ga4_process_partition")} 
+    ); 
+}
+
+SELECT
+   event_date AS event_date,
+   user_pseudo_id,
+   event_name,
+   event_timestamp,
+   CONCAT(user_pseudo_id, (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id')) AS unique_session_id,
+   (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_number') AS ga_session_number,
+   (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'timestamp') AS timestamp,
+   batch_event_index,
+   (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_url') AS link_url,
+   items.item_id,
+   item_name,
+   items.item_list_index,
+   (SELECT value.string_value FROM UNNEST(item_params) WHERE key='item_content_id') AS item_content_id
+FROM ${ref("partitioned_events")}, UNNEST(items) AS items
+WHERE event_name = 'select_item'
+AND event_date = partition_id
+
+      
