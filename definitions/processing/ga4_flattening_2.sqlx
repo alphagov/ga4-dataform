@@ -27,6 +27,6 @@ SELECT
     IF(event_name = 'select_item', items.item_id, NULL) AS item_id,
     IF(event_name = 'select_item', items.item_name, NULL) AS item_name,
     IF(event_name = 'select_item', items.item_list_index, NULL) AS item_list_index,
-    IF(event_name = 'select_item', (SELECT value.string_value FROM UNNEST(item_params) WHERE key='item_content_id'), NULL) AS item_content_id,
+    IF(event_name = 'select_item', (SELECT value.string_value FROM UNNEST(item_params) WHERE key='item_content_id'), NULL) AS item_content_id
 FROM ${ref("partitioned_events")}, UNNEST(items) AS items
 WHERE event_date = partition_id
