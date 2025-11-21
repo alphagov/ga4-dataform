@@ -15,7 +15,7 @@ WITH final_cte AS (
        b.item_content_id
           
    FROM ${ref("ga4_flattening_1")} a
-   LEFT JOIN ${ref("ga4_flattening_4")} b
+   LEFT JOIN ${ref("ga4_flattening_2")} b
        ON a.event_date=b.event_date
        AND a.user_pseudo_id=b.user_pseudo_id
        AND a.event_name=b.event_name
