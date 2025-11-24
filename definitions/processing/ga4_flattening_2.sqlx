@@ -13,7 +13,7 @@ pre_operations {
     ); 
 }
 
-SELECT
+SELECT DISTINCT
     event_date AS event_date,
     user_pseudo_id,
     event_name,
