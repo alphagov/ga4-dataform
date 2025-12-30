@@ -6,7 +6,7 @@ config {
 }
 
 SELECT 
-  * 
+  *
   EXCEPT(primary_publishing_organisation, content_id, browse_topic, publishing_app, public_updated_at, updated_at,
   first_published_at, taxonomy_all_ids, status_code, withdrawn, document_type, history, taxonomy_main_id, taxonomy_all,
   taxonomy_main, taxonomy_level_1, full_taxonomy_DEPRECATED, full_taxonomy_ids_DEPRECATED, rendering_app, organisations,
