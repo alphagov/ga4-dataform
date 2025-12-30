@@ -74,5 +74,4 @@ CASE
     (CASE WHEN link_path_parts_5 != "" THEN link_path_parts_5 ELSE '' END) 
   )) 
 END AS full_link_URL
-   
 FROM ${ref("ga4_flattening_5")}
