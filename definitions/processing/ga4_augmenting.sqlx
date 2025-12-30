@@ -6,5 +6,37 @@ config {
 }
 
 SELECT 
-  *
+  * 
+  EXCEPT(primary_publishing_organisation, content_id, browse_topic, publishing_app, public_updated_at, updated_at,
+  first_published_at, taxonomy_all_ids, status_code, withdrawn, document_type, history, taxonomy_main_id, taxonomy_all,
+  taxonomy_main, taxonomy_level_1, full_taxonomy_DEPRECATED, full_taxonomy_ids_DEPRECATED, rendering_app, organisations,
+  schema_name, term, content, campaign_id),
+
+  LAST_VALUE(primary_publishing_organisation IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS primary_publishing_organisation,
+  LAST_VALUE(content_id IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS content_id,
+  LAST_VALUE(browse_topic IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS browse_topic,
+  LAST_VALUE(publishing_app IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS publishing_app,
+  LAST_VALUE(public_updated_at IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS public_updated_at,
+  LAST_VALUE(updated_at IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS updated_at,
+  LAST_VALUE(first_published_at IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS first_published_at,
+  LAST_VALUE(taxonomy_all_ids IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS taxonomy_all_ids,
+  LAST_VALUE(status_code IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS status_code,
+  LAST_VALUE(withdrawn IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS withdrawn,
+  LAST_VALUE(document_type IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS document_type,
+  LAST_VALUE(history IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS history,
+  LAST_VALUE(taxonomy_main_id IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS taxonomy_main_id,
+  LAST_VALUE(taxonomy_all IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS taxonomy_all,
+  LAST_VALUE(taxonomy_main IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS taxonomy_main,
+  LAST_VALUE(taxonomy_level_1 IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS taxonomy_level_1,
+  LAST_VALUE(full_taxonomy_DEPRECATED IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS full_taxonomy_DEPRECATED,
+  LAST_VALUE(full_taxonomy_ids_DEPRECATED IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS full_taxonomy_ids_DEPRECATED,
+  LAST_VALUE(rendering_app IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS rendering_app,
+  LAST_VALUE(organisations IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS organisations,
+  LAST_VALUE(schema_name IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS schema_name,
+  IFNULL(FIRST_VALUE(event_source) OVER (PARTITION BY user_pseudo_id, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING),"direct") AS session_source,
+  LAST_VALUE(term IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS term,
+  IFNULL(FIRST_VALUE(event_medium) OVER (PARTITION BY user_pseudo_id, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING),"(none)") AS session_medium,
+  LAST_VALUE(content IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS content,
+  LAST_VALUE(campaign_id IGNORE NULLS) OVER (PARTITION BY user_pseudo_id, page_location, ga_sessionid ORDER BY event_timestamp, timestamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS campaign_id
+
 FROM ${ref("ga4_cleaning")}
