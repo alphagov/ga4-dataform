@@ -97,7 +97,7 @@ SELECT
     traffic_source.name AS first_user_campaign,
     traffic_source.medium AS first_user_medium,
     traffic_source.source AS first_user_source,
-    stream_id, 
+    stream_id,
     platform,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_path_parts_1') AS link_path_parts_1,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'link_path_parts_2') AS link_path_parts_2,
