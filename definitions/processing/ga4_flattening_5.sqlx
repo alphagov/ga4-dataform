@@ -7,7 +7,7 @@ config {
 
 WITH final_cte AS (
    SELECT
-       a.*,
+       a.* EXCEPT(event_key),
        b.item_list_name,
        b.item_id,
        b.item_name,

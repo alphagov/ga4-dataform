@@ -19,7 +19,7 @@ pre_operations {
 
 WITH
   SRC AS (
-    SELECT *
+    SELECT * EXCEPT (event_key)
     FROM ${ref("partitioned_events")}
     WHERE event_date = partition_id
   ),
