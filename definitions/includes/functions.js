@@ -1,4 +1,4 @@
-function renderShardScript(in_table, out_table,) {
+function renderShardScript(in_table, out_table) {
   // in_table like `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.TABLES`
   // out_table like `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.PARTITIONS`
   return `
