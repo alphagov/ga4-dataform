@@ -1,6 +1,6 @@
 function renderShardScript(in_table, out_table,) {
   // in_table like `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.TABLES`
-  //out_table like `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.PARTITIONS`
+  // out_table like `ga4-analytics-352613.analytics_330577055.INFORMATION_SCHEMA.PARTITIONS`
   return `
       SELECT REPLACE(table_name,'events_','') AS table_name
       FROM ${in_table}
