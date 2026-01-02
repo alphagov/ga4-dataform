@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  database: "ga4-analytics-352613",
+  schema: "analytics_330580593",
+  name: "staging_events_*",
+}
