@@ -1,5 +1,5 @@
 -- placeholder to test if we can get overrides working
--- will fully qualifying the name and location via constants mean we can make use of workspace overrides for testing
+-- will fully qualifying the name and location via constants allow us to make use of workspace overrides for testing
 
 /*
 config {
