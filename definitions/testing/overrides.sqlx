@@ -1,0 +1,20 @@
+-- placeholder to test if we can get overrides working
+-- will fully qualifying the name and location via constants mean we can make use of workspace overrides for testing
+
+/*
+config {
+    type: "operations",
+    database: constants.project_id,
+    schema: constants.dataset,
+    hasOutput: true
+}
+
+${
+      ref({
+          database: constants.project_id,
+          schema: constants.dataset,
+          name: "tabla1"
+      })
+  }
+*/
+SELECT 'GOOSE'
