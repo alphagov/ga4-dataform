@@ -16,7 +16,19 @@ pre_operations {
 }
 
 SELECT
- CONCAT(ROW_NUMBER() OVER (ORDER BY event_timestamp, TO_JSON_STRING(event_params)), '_', event_date) AS event_key,
+ CONCAT(
+  ROW_NUMBER() OVER (
+    ORDER BY 
+      event_timestamp, 
+      TO_JSON_STRING(
+        ARRAY(
+          SELECT AS STRUCT key, value
+          FROM UNNEST(event_params)
+          ORDER BY key
+        )
+      )
+    ), 
+  '_', event_date) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
 FROM ${ref("events_*")}
