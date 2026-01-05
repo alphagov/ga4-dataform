@@ -28,7 +28,7 @@ SELECT
         )
       ) ASC
     ), 
-  '_', event_date) AS event_key,
+  '_', _TABLE_SUFFIX) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
 FROM ${ref("events_*")}
