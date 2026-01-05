@@ -24,9 +24,9 @@ SELECT
         ARRAY(
           SELECT AS STRUCT key, value
           FROM UNNEST(event_params)
-          ORDER BY key
+          ORDER BY key ASC
         )
-      )
+      ) ASC
     ), 
   '_', event_date) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
