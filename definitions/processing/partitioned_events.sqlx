@@ -35,6 +35,7 @@ SELECT
     CONCAT(
       ROW_NUMBER() OVER (
         ORDER BY 
+          event_bundle_sequence_id,
           batch_page_id,
           batch_ordering_id,
           batch_event_index 
@@ -43,7 +44,7 @@ SELECT
       '_', 
       _TABLE_SUFFIX
     )
-    ) AS event_key,
+  ) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
 FROM ${ref("events_*")}
