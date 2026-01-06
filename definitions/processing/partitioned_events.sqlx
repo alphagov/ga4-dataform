@@ -38,8 +38,7 @@ SELECT
           event_bundle_sequence_id,
           batch_page_id,
           batch_ordering_id,
-          batch_event_index 
-          ASC
+          batch_event_index ASC
       ), 
       '_', 
       _TABLE_SUFFIX
