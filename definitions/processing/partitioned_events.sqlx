@@ -16,6 +16,34 @@ pre_operations {
 }
 
 SELECT
+  IF (table_suffix < '20250101',
+    CONCAT(
+      ROW_NUMBER() OVER (
+        ORDER BY 
+          event_timestamp, 
+          TO_JSON_STRING(
+            ARRAY(
+              SELECT AS STRUCT key, value
+              FROM UNNEST(event_params)
+              ORDER BY key ASC
+            )
+          ) ASC
+      ), 
+      '_', 
+      _TABLE_SUFFIX
+    ),
+    CONCAT(
+      ROW_NUMBER() OVER (
+        ORDER BY 
+          event_bundle_sequence_id,
+          batch_page_id,
+          batch_ordering_id,
+          batch_event_index ASC
+      ), 
+      '_', 
+      _TABLE_SUFFIX
+    )
+  ) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
 FROM ${ref("events_*")}

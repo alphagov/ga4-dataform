@@ -1,0 +1,39 @@
+config {
+    type: "incremental",
+    database: "ga4-analytics-352613",
+    schema: "flattened_dataset",
+    bigquery: {
+        partitionBy: "event_date",
+        requirePartitionFilter : true,
+    }  
+}
+
+pre_operations {
+  DECLARE partition_id DATE;
+  SET partition_id = (
+    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d",'19000101'))
+    FROM  ${ref("navigation_partition")} 
+    ); 
+}
+
+SELECT
+ event_date,
+ cleaned_page_location,
+ COALESCE(canonical_url, '') AS canonical_url,
+ COALESCE(link_domain, '') AS link_domain,
+ COALESCE(link_url, '') AS link_url,
+ COALESCE(type, '') AS type,
+ COALESCE(outbound, '') AS outbound,
+ COUNT(*) AS event_count,
+ COUNT(DISTINCT unique_session_id) AS sessions_with_event
+FROM ${ref("partitioned_flattened_events")}
+WHERE event_date = partition_id
+ AND event_name = 'navigation'
+GROUP BY
+ event_date,
+ cleaned_page_location,
+ canonical_url,
+ link_domain,
+ link_url,
+ type,
+ outbound
