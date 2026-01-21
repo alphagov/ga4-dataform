@@ -181,7 +181,8 @@ SELECT
     'autocomplete_input') AS STRING), CAST((SELECT value.double_value FROM UNNEST(event_params)WHERE KEY = 'autocomplete_input') AS STRING))) AS autocomplete_input,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'canonical_url') AS canonical_url,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'traffic_type') AS traffic_type,
-    (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'discovery_engine_attribution_token') AS discovery_engine_attribution_token
+    (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'discovery_engine_attribution_token') AS discovery_engine_attribution_token,
+    (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'app_promo_banner') AS app_promo_banner,
   
 FROM ${ref("partitioned_events")}
 WHERE event_date = partition_id
