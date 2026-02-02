@@ -20,6 +20,7 @@ SELECT
     CONCAT(
       ROW_NUMBER() OVER (
         ORDER BY 
+          event_name,
           event_timestamp, 
           TO_JSON_STRING(
             ARRAY(
