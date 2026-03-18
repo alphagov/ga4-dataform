@@ -18,6 +18,7 @@ pre_operations {
 
 SELECT
  event_date,
+ event_name,
  cleaned_page_location,
  COALESCE(canonical_url, '') AS canonical_url,
  COALESCE(link_domain, '') AS link_domain,
@@ -28,9 +29,10 @@ SELECT
  COUNT(DISTINCT unique_session_id) AS sessions_with_event
 FROM ${ref("partitioned_flattened_events")}
 WHERE event_date = partition_id
- AND event_name = 'navigation'
+ AND event_name IN ('navigation', 'information_click', 'file_download')
 GROUP BY
  event_date,
+ event_name,
  cleaned_page_location,
  canonical_url,
  link_domain,

@@ -8,8 +8,8 @@ config {
 SELECT 
   *
   EXCEPT(taxonomy_all_1, taxonomy_all_2, taxonomy_all_3, taxonomy_all_4, taxonomy_all_5,
-   taxonomy_all_ids_1, taxonomy_all_ids_2, taxonomy_all_ids_3, taxonomy_all_ids_4, taxonomy_all_ids_5,
-   link_path_parts_1, link_path_parts_2, link_path_parts_3, link_path_parts_4, link_path_parts_5),
+   taxonomy_all_ids_1, taxonomy_all_ids_2, taxonomy_all_ids_3, taxonomy_all_ids_4, taxonomy_all_ids_5),
+   --link_path_parts_1, link_path_parts_2, link_path_parts_3, link_path_parts_4, link_path_parts_5),
 
   (CASE
    WHEN (REGEXP_CONTAINS(document_type, 'smart_answer|_transaction|special_route')) THEN (SPLIT(SPLIT(REGEXP_REPLACE(page_location, 'https://www.gov.uk', ''),'?')[SAFE_OFFSET(0)],'#')[SAFE_OFFSET(0)])
@@ -56,22 +56,25 @@ CASE
   ))
 END AS full_taxonomy_ids_DEPRECATED,
 
-CASE 
-  WHEN (CONCAT ( 
-    (CASE WHEN link_domain != "" THEN link_domain ELSE '' END), 
-    (CASE WHEN link_path_parts_1 != "" THEN link_path_parts_1 ELSE '' END), 
-    (CASE WHEN link_path_parts_2 != "" THEN link_path_parts_2 ELSE '' END), 
-    (CASE WHEN link_path_parts_3 != "" THEN link_path_parts_3 ELSE '' END), 
-    (CASE WHEN link_path_parts_4 != "" THEN link_path_parts_4 ELSE '' END), 
-    (CASE WHEN link_path_parts_5 != "" THEN link_path_parts_5 ELSE '' END) 
-  )) = '' THEN NULL 
-  ELSE (CONCAT ( 
-    (CASE WHEN link_domain != "" THEN link_domain ELSE '' END), 
-    (CASE WHEN link_path_parts_1 != "" THEN link_path_parts_1 ELSE '' END), 
-    (CASE WHEN link_path_parts_2 != "" THEN link_path_parts_2 ELSE '' END), 
-    (CASE WHEN link_path_parts_3 != "" THEN link_path_parts_3 ELSE '' END), 
-    (CASE WHEN link_path_parts_4 != "" THEN link_path_parts_4 ELSE '' END), 
-    (CASE WHEN link_path_parts_5 != "" THEN link_path_parts_5 ELSE '' END) 
-  )) 
-END AS full_link_URL
+-- CASE 
+--   WHEN (CONCAT ( 
+--     (CASE WHEN link_domain != "" THEN link_domain ELSE '' END), 
+--     (CASE WHEN link_path_parts_1 != "" THEN link_path_parts_1 ELSE '' END), 
+--     (CASE WHEN link_path_parts_2 != "" THEN link_path_parts_2 ELSE '' END), 
+--     (CASE WHEN link_path_parts_3 != "" THEN link_path_parts_3 ELSE '' END), 
+--     (CASE WHEN link_path_parts_4 != "" THEN link_path_parts_4 ELSE '' END), 
+--     (CASE WHEN link_path_parts_5 != "" THEN link_path_parts_5 ELSE '' END) 
+--   )) = '' THEN NULL 
+--   ELSE (CONCAT ( 
+--     (CASE WHEN link_domain != "" THEN link_domain ELSE '' END), 
+--     (CASE WHEN link_path_parts_1 != "" THEN link_path_parts_1 ELSE '' END), 
+--     (CASE WHEN link_path_parts_2 != "" THEN link_path_parts_2 ELSE '' END), 
+--     (CASE WHEN link_path_parts_3 != "" THEN link_path_parts_3 ELSE '' END), 
+--     (CASE WHEN link_path_parts_4 != "" THEN link_path_parts_4 ELSE '' END), 
+--     (CASE WHEN link_path_parts_5 != "" THEN link_path_parts_5 ELSE '' END) 
+--   )) 
+-- END AS full_link_URL
+--Field no longer required but column retained for historic data
+CAST(NULL AS STRING) AS full_link_URL
+
 FROM ${ref("ga4_flattening_5")}
