@@ -1,0 +1,29 @@
+# PROD 
+defaultProject: "gds-bq-processing" 
+defaultLocation: "europe-west2" 
+defaultAssertionDataset: dataform_assertions
+dataformCoreVersion: 3.0.42
+
+vars:
+  # Environment name
+  environment: "prod"
+
+  # Source database & schema(s) 
+  source_database: "ga4-analytics-352613"
+  source_ga4_integration_schema: "analytics_330580593"
+  source_ga4_prod_schema: "analytics_330577055"
+  source_flattened_dataset:  "flattened_dataset"
+
+  #Processing database & schema(s) 
+  processing_database:  "gds-bq-processing"
+  processing_schema:  "govuk_ga4_processing"
+  processing_flattened_dataset:  "flattened_dataset"
+
+  # Target database & schema(s) 
+  target_database: "gds-bq-reporting"
+  target_schema: "processing"
+  target_flattened_dataset: "flattened_dataset"
+
+  # Date variables
+  start_date: "20260329"
+  partitioned_events_table_suffix: "20250101"

@@ -1,14 +1,15 @@
 config {
   type: "table",
-  database: "gds-bq-processing",
-  schema: "govuk_ga4_processing",
-  dependencies: [ "partitioned_events"]
+  tags: [dataform.projectConfig.vars.environment],
+  database: dataform.projectConfig.vars.processing_database,
+  schema: dataform.projectConfig.vars.processing_schema,
+  
 }
  
 pre_operations {
   DECLARE partition_id DATE;
   SET partition_id = (
-    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d",'19000101'))
+    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
     FROM  ${ref("ga4_process_partition")} 
     ); 
 }
