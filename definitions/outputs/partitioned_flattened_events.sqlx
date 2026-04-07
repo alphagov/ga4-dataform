@@ -1,7 +1,8 @@
 config {
     type: "incremental",
-    database: "ga4-analytics-352613",
-    schema: "flattened_dataset",
+    tags: [dataform.projectConfig.vars.environment],
+    database: dataform.projectConfig.vars.source_database,
+    schema: dataform.projectConfig.vars.source_flattened_dataset,
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,

@@ -1,8 +1,8 @@
 config {
   type: "table",
-  database: "gds-bq-processing",
-  schema: "govuk_ga4_processing",
-  dependencies: [ "ga4_flattening_5"]
+  tags: [dataform.projectConfig.vars.environment],
+  database: dataform.projectConfig.vars.processing_database,
+  schema: dataform.projectConfig.vars.processing_schema,
 }
 
 SELECT 

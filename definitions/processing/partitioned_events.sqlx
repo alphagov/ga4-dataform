@@ -1,5 +1,8 @@
 config {
   type: "incremental",
+  tags: [dataform.projectConfig.vars.environment],
+  database: dataform.projectConfig.vars.source_database,
+  schema: dataform.projectConfig.vars.source_ga4_prod_schema,
   bigquery: {
     partitionBy: "DATE(event_date)",
     requirePartitionFilter : true,
@@ -16,7 +19,7 @@ pre_operations {
 }
 
 SELECT
-  IF (table_suffix < '20250101',
+  IF (table_suffix < "${dataform.projectConfig.vars.partitioned_events_table_suffix}",
     CONCAT(
       ROW_NUMBER() OVER (
         ORDER BY 

@@ -1,7 +1,8 @@
 config {
   type: "table",
-  database: "gds-bq-processing",
-  schema: "govuk_ga4_processing",
+  tags: [dataform.projectConfig.vars.environment],
+  database: dataform.projectConfig.vars.processing_database,
+  schema: dataform.projectConfig.vars.processing_schema,
   dependencies: [ "partitioned_events"]
 }
 

@@ -1,5 +1,0 @@
-defaultProject: ga4-analytics-352613
-defaultLocation: europe-west2
-defaultDataset: analytics_330577055
-defaultAssertionDataset: dataform_assertions
-dataformCoreVersion: 3.0.24
