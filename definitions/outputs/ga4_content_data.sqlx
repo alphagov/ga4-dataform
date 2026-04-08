@@ -2,7 +2,7 @@ config {
     type: "incremental",
     tags: [dataform.projectConfig.vars.environment],
     uniqueKey: ["the_date", "cleaned_page_location"],
-    database: dataform.projectConfig.vars.target_database,
+    database: dataform.projectConfig.vars.source_database,
     schema: dataform.projectConfig.vars.target_flattened_dataset,
     tags: [dataform.projectConfig.vars.environment],
     dependencies: ["partitioned_events", "ga4_process_partition"],
