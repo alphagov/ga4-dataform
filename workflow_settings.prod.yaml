@@ -25,5 +25,5 @@ vars:
   target_flattened_dataset: "flattened_dataset"
 
   # Date variables
-  start_date: "20260329"
+  start_date: "19000101"
   partitioned_events_table_suffix: "20250101"
