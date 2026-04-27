@@ -18,6 +18,29 @@ pre_operations {
     ); 
 }
 
+with consented_cte as (
+  select 
+  *,
+  'true' as is_consented
+  from ${ref("events_*")}
+  WHERE _TABLE_SUFFIX = table_suffix
+), 
+unconsented_cte as (
+  select
+  *,
+  'false' as is_consented
+  from ${ref("events_*")} --this one needs to point to the unconsented dataset once we have that data coming through, can we set this in the yaml file?
+  WHERE _TABLE_SUFFIX = table_suffix
+), 
+union_cte as (
+  select
+  * 
+  from consented_cte
+  union all 
+  select
+  *
+  from unconsented_cte
+)
 SELECT
   IF (table_suffix < "${dataform.projectConfig.vars.partitioned_events_table_suffix}",
     CONCAT(
@@ -50,5 +73,5 @@ SELECT
   ) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
  * EXCEPT (event_date)
-FROM ${ref("events_*")}
-WHERE _TABLE_SUFFIX = table_suffix
+FROM union_cte
+

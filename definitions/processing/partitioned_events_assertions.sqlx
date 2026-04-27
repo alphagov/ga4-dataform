@@ -1,0 +1,22 @@
+config {
+    type: "assertion"
+}
+
+SELECT
+  event_date,
+  user_id,
+  is_consented,
+  COUNT(*) AS row_count
+FROM
+  ${ref("partitioned_events")}
+WHERE
+(is_consented = ''
+    OR NOT REGEXP_CONTAINS(is_consented, r'true|false')
+    OR is_consented IS NULL)
+  
+GROUP BY
+  1,
+  2,
+  3
+HAVING
+  COUNT(*) > 1

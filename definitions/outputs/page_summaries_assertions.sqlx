@@ -1,0 +1,18 @@
+-- definitions/assertions/assert_partitioned_events.sqlx
+config {
+  type: "assertion"
+}
+
+
+SELECT
+  event_date,
+  user_id,
+  is_consented,
+  COUNT(*) AS row_count
+FROM ${ref("page_summaries_processing")}
+WHERE (
+    user_id IS NULL                          
+    OR event_date IS NULL                    
+    OR is_consented = 'false'
+  )
+GROUP BY 1, 2, 3

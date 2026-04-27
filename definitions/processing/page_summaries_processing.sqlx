@@ -1,0 +1,82 @@
+config {
+    type: "table",
+    tags: [dataform.projectConfig.vars.environment],
+    database: dataform.projectConfig.vars.processing_database,
+    schema: dataform.projectConfig.vars.processing_schema,
+    bigquery: {
+        partitionBy: "event_date",
+        requirePartitionFilter : true,
+    }
+}
+
+pre_operations {
+  DECLARE partition_id DATE;
+  SET partition_id = (
+    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
+    FROM  ${ref("page_summary_partition")} 
+    ); 
+}
+
+WITH
+  cte1 AS (
+  SELECT
+    event_date,
+    unique_session_ID,
+    cleaned_page_location,
+    event_timestamp,
+    event_name,
+    entrances,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS pageviews,
+    IF(event_name = "search",unique_session_ID,NULL) AS searches,
+    IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
+    IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
+    IF(category='mobile',unique_session_ID,NULL) AS mobile_sessions,
+    is_consented
+  FROM
+    ${ref("ga4_augmenting")}
+  WHERE
+    event_date = partition_id
+    and is_consented = 'true'
+    AND NOT status_code BETWEEN 400 AND 599
+    AND NOT REGEXP_CONTAINS(cleaned_page_location, "https:\\/\\/|^/www\\.\\w|\\s|\\p{Han}") ),
+  
+  cte2 AS (
+  SELECT
+    unique_session_ID,
+    event_name,
+    MAX(event_timestamp) AS max_timestamp
+  FROM
+    cte1
+  WHERE
+    event_name = "page_view"
+  GROUP BY
+    1,
+    2 ),
+  
+  cte3 AS (
+  SELECT
+    cte1.*,
+    cte2.unique_session_ID AS exits
+  FROM
+    cte1
+  LEFT JOIN
+    cte2
+  ON
+    cte1.unique_session_ID = cte2.unique_session_ID
+    AND cte1.event_name = cte2.event_name
+    AND cte1.event_timestamp = cte2.max_timestamp)
+
+SELECT 
+    event_date,
+    cleaned_page_location,
+    COUNT(pageviews) AS pageviews,
+    COUNT(DISTINCT pageviews) AS unique_pageviews,
+    COUNT(DISTINCT unique_session_ID) AS sessions,
+    SUM(entrances) AS entrances,
+    COUNT(exits) AS exits,
+    COUNT(searches) AS searches,
+    COUNT(useful_yes) AS useful_yes,
+    COUNT(useful_no) AS useful_no,
+    COUNT(DISTINCT mobile_sessions) AS mobile_sessions
+FROM cte3
+GROUP BY ALL
