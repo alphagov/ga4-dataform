@@ -7,9 +7,11 @@ config {
         partitionBy: "event_date",
         requirePartitionFilter : true,
         clusterBy: ["event_name"]
-    }  
+    },
+    dependOnDependencyAssertions: true,
+  dependencies: [ "partitioned_events_assertions" ]
 }
  
 SELECT 
   *
-FROM ${ref("ga4_augmenting")}
+FROM ${ref("partitioned_flattened_events_filter")}

@@ -1,0 +1,14 @@
+config {
+  type: "assertion"
+}
+
+SELECT
+  event_date,
+  user_id,
+  is_consented,
+  COUNT(*) AS row_count
+FROM ${ref("partitioned_flattened_events_filter")}
+WHERE (
+    is_consented = 'false'
+  )
+GROUP BY 1, 2, 3

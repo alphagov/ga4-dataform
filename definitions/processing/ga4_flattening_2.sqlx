@@ -3,7 +3,8 @@ config {
   tags: [dataform.projectConfig.vars.environment],
   database: dataform.projectConfig.vars.processing_database,
   schema: dataform.projectConfig.vars.processing_schema,
-  
+  dependOnDependencyAssertions: true,
+  dependencies: [ "partitioned_events_assertions" ]
 }
  
 pre_operations {
