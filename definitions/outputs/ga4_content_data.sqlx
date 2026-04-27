@@ -3,7 +3,7 @@ config {
     tags: [dataform.projectConfig.vars.environment],
     uniqueKey: ["the_date", "cleaned_page_location"],
     database: dataform.projectConfig.vars.target_database,
-    schema: dataform.projectConfig.vars.target_flattened_dataset,
+    schema: dataform.projectConfig.vars.target_schema,
     tags: [dataform.projectConfig.vars.environment],
     dependOnDependencyAssertions: true,
     dependencies: ["ga4_content_data_assertions"],
