@@ -5,7 +5,6 @@ config {
     database: dataform.projectConfig.vars.target_database,
     schema: dataform.projectConfig.vars.target_schema,
     tags: [dataform.projectConfig.vars.environment],
-    dependencies: ["partitioned_events", "ga4_process_partition"],
     bigquery: {
       clusterBy: ["the_date"]
     }
@@ -14,140 +13,74 @@ config {
 pre_operations {
   DECLARE partition_id DATE;
   SET partition_id = (
-    SELECT COALESCE(PARSE_DATE("%Y%m%d", MAX(partition_id)), PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
-    FROM ${ref("ga4_process_partition")}
-    );
+    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
+    FROM  ${ref("content_data_partition")} 
+    ); 
 }
 
 WITH
-  SRC AS (
-    SELECT * EXCEPT (event_key)
-    FROM ${ref("partitioned_events")}
-    WHERE event_date = partition_id
-  ),
-  CTE1 AS (
+  cte1 AS (
   SELECT
-    user_pseudo_id,
-    (
-    SELECT
-      value.string_value
-    FROM
-      UNNEST(event_params)
-    WHERE
-      KEY = 'search_term') AS search_term,
-    SPLIT(SPLIT(REGEXP_REPLACE((
-          SELECT
-            value.string_value
-          FROM
-            UNNEST(event_params)
-          WHERE
-            KEY = 'page_location'), 'https://www.gov.uk', ''),'?')[SAFE_OFFSET(0)],'#')[SAFE_OFFSET(0)] AS cleaned_page_location,
-    (
-    SELECT
-      value.string_value
-    FROM
-      UNNEST(event_params)
-    WHERE
-      KEY = 'ui_text') AS ui_text,
-    CONCAT(user_pseudo_id, (
-      SELECT
-        value.int_value
-      FROM
-        UNNEST(event_params)
-      WHERE
-        KEY = 'ga_session_id')) AS unique_session_id,
-    (
-    SELECT
-      value.int_value
-    FROM
-      UNNEST(event_params)
-    WHERE
-      KEY = 'entrances') AS entrances,
-    event_name,
+    event_date,
+    unique_session_ID,
+    cleaned_page_location,
     event_timestamp,
-    FORMAT_DATE('%Y-%m-%d', event_date) AS the_date,
-    IFNULL((CAST((
-          SELECT
-            value.int_value
-          FROM
-            UNNEST(event_params)
-          WHERE
-            KEY = "session_engaged") AS STRING)),(
-      SELECT
-        value.string_value
-      FROM
-        UNNEST(event_params)
-      WHERE
-        KEY = "session_engaged")) AS session_engaged,
-  IF
-    (LEAD(event_name) OVER (PARTITION BY CONCAT(user_pseudo_id, (SELECT value.int_value FROM UNNEST(event_params)
-          WHERE
-            KEY = 'ga_session_id'))
-      ORDER BY
-        event_timestamp) IS NULL, 1, NULL) AS isExit,
+    event_name,
+    entrances,
+    search_term,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS pageviews,
+    IF(event_name = "search",unique_session_ID,NULL) AS searches,
+    IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
+    IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
+    IF(category='mobile',unique_session_ID,NULL) AS mobile_sessions,
+    IF(session_engaged='1',unique_session_ID,NULL) AS session_engaged,
+    IF(event_name = 'session_start',unique_session_ID,NULL) AS session_start
   FROM
-    SRC),
-  CTE2 AS (
+    `ga4-analytics-352613.flattened_dataset.partitioned_flattened_events`
+  WHERE
+    event_date = partition_id
+    AND NOT status_code BETWEEN 400 AND 599
+    AND NOT REGEXP_CONTAINS(cleaned_page_location, "https:\\/\\/|^/www\\.\\w|\\s|\\p{Han}") ),
+  
+  cte2 AS (
   SELECT
-    the_date,
-    cleaned_page_location,
-    COUNT(DISTINCT
-      CASE
-        WHEN event_name = 'page_view' THEN unique_session_ID
-    END
-      ) AS unique_page_views,
-    COUNT(CASE
-        WHEN event_name = 'page_view' THEN unique_session_ID
-    END
-      ) AS total_page_views,
-    COUNT(DISTINCT
-      CASE
-        WHEN isexit = 1 THEN unique_session_ID
-    END
-      ) AS exits,
-    COUNT(DISTINCT
-      CASE
-        WHEN entrances = 1 THEN unique_session_ID
-    END
-      ) AS entrances,
-    COUNT(CASE
-        WHEN event_name = 'search' THEN search_term
-    END
-      ) AS total_searches,
-    COUNT(DISTINCT
-      CASE
-        WHEN event_name = 'search' THEN unique_session_id
-    END
-      ) AS unique_search_sessions,
-    COUNT(DISTINCT
-      CASE
-        WHEN event_name = 'search' THEN search_term
-    END
-      ) AS unique_searchterms,
-    COUNT(CASE
-        WHEN event_name = 'form_submit' AND ui_text = 'Yes' THEN unique_session_id
-    END
-      ) AS useful_yes,
-    COUNT(CASE
-        WHEN event_name = 'form_submit' AND ui_text = 'No' THEN unique_session_id
-    END
-      ) AS useful_no,
-    COUNT(DISTINCT
-      CASE
-        WHEN event_name = 'session_start' THEN unique_session_iD
-    END
-      ) AS session_starts,
-    COUNT(DISTINCT
-      CASE
-        WHEN session_engaged = '1' THEN unique_session_id
-    END
-      ) AS session_engaged
+    unique_session_ID,
+    event_name,
+    MAX(event_timestamp) AS max_timestamp
   FROM
-    CTE1
+    cte1
+  WHERE
+    event_name = "page_view"
   GROUP BY
+    1,
+    2 ),
+  
+  cte3 AS (
+  SELECT
+    cte1.*,
+    cte2.unique_session_ID AS exits
+  FROM
+    cte1
+  LEFT JOIN
+    cte2
+  ON
+    cte1.unique_session_ID = cte2.unique_session_ID
+    AND cte1.event_name = cte2.event_name
+    AND cte1.event_timestamp = cte2.max_timestamp)
+
+SELECT 
+    CAST(event_date AS STRING) AS the_date,
     cleaned_page_location,
-    the_date )
-SELECT
-  *
-FROM
-  CTE2
+    COUNT(DISTINCT pageviews) AS unique_page_views,
+    COUNT(pageviews) AS total_page_views,
+    COUNT(exits) AS exits,
+    SUM(entrances) AS entrances,
+    COUNT(searches) AS total_searches,
+    COUNT(DISTINCT searches) AS unique_search_sessions,
+    COUNT(DISTINCT search_term) AS unique_searchterms,
+    COUNT(useful_yes) AS useful_yes,
+    COUNT(useful_no) AS useful_no,
+    COUNT(DISTINCT session_start) AS session_starts,
+    COUNT(DISTINCT session_engaged) AS session_engaged,
+FROM cte3
+GROUP BY ALL
