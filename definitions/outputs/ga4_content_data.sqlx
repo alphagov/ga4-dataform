@@ -1,6 +1,5 @@
 config {
     type: "incremental",
-    tags: [dataform.projectConfig.vars.environment],
     uniqueKey: ["the_date", "cleaned_page_location"],
     database: dataform.projectConfig.vars.target_database,
     schema: dataform.projectConfig.vars.target_schema,
@@ -32,11 +31,11 @@ WITH
     IF(event_name = "search",unique_session_ID,NULL) AS searches,
     IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
     IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
-    IF(category='mobile',unique_session_ID,NULL) AS mobile_sessions,
     IF(session_engaged='1',unique_session_ID,NULL) AS session_engaged,
     IF(event_name = 'session_start',unique_session_ID,NULL) AS session_start
   FROM
-    `ga4-analytics-352613.flattened_dataset.partitioned_flattened_events`
+    --`ga4-analytics-352613.flattened_dataset.partitioned_flattened_events`
+    ${ref("partitioned_flattened_events")} 
   WHERE
     event_date = partition_id
     AND NOT status_code BETWEEN 400 AND 599
@@ -53,7 +52,7 @@ WITH
     event_name = "page_view"
   GROUP BY
     1,
-    2 ),
+    2),
   
   cte3 AS (
   SELECT
@@ -81,6 +80,6 @@ SELECT
     COUNT(useful_yes) AS useful_yes,
     COUNT(useful_no) AS useful_no,
     COUNT(DISTINCT session_start) AS session_starts,
-    COUNT(DISTINCT session_engaged) AS session_engaged,
+    COUNT(DISTINCT session_engaged) AS session_engaged
 FROM cte3
 GROUP BY ALL
