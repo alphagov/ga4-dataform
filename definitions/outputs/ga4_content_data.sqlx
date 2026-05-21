@@ -34,7 +34,6 @@ WITH
     IF(session_engaged='1',unique_session_ID,NULL) AS session_engaged,
     IF(event_name = 'session_start',unique_session_ID,NULL) AS session_start
   FROM
-    --`ga4-analytics-352613.flattened_dataset.partitioned_flattened_events`
     ${ref("partitioned_flattened_events")} 
   WHERE
     event_date = partition_id
