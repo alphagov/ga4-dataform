@@ -1,8 +1,6 @@
 config {
     type: "assertion",
     tags: [dataform.projectConfig.vars.environment],
-    database: dataform.projectConfig.vars.source_database,
-    schema: dataform.projectConfig.vars.source_ga4_prod_schema,
 }
 
 WITH events AS (
@@ -11,7 +9,7 @@ SELECT
     user_id,
     IF(table_suffix < "${dataform.projectConfig.vars.aggregate_consent_start_date}",
         'true',
-        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'is_consented')) as is_consented,
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'is_consented')) as is_consented
 FROM
     ${ref("ga4_process_shard_day")}
 )
