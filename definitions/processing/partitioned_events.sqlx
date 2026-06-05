@@ -3,7 +3,7 @@ config {
   tags: [dataform.projectConfig.vars.environment],
   database: dataform.projectConfig.vars.source_database,
   schema: dataform.projectConfig.vars.source_ga4_prod_schema,
-  dependencies: ["partitioned_events_assertions"],
+  dependencies: ["ga4_process_shard_day_assertions"],
   bigquery: {
     partitionBy: "event_date",
     requirePartitionFilter : true,
