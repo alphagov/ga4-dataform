@@ -9,8 +9,9 @@ pre_operations {
   DECLARE t_suffix STRING DEFAULT "YYYYMMDD";
   SET t_suffix = (
     SELECT table_name
-    FROM  ${ref("ga4_process_shard")} 
-    ); 
+    FROM  ${ref("ga4_process_shard")}
+    LIMIT 1
+    );
 }
 
 SELECT
