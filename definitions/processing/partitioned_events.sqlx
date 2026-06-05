@@ -14,8 +14,8 @@ config {
 pre_operations {
   DECLARE table_suffix STRING DEFAULT "YYYYMMDD";
   SET table_suffix = (
-    SELECT table_name
-    FROM  ${ref("ga4_process_shard")} 
+    SELECT shard
+    FROM  ${ref("ga4_process_shard_day")} 
     ); 
 }
 
@@ -35,7 +35,7 @@ SELECT
           ) ASC
       ), 
       '_', 
-      _TABLE_SUFFIX
+      shard
     ),
     CONCAT(
       ROW_NUMBER() OVER (
@@ -46,10 +46,9 @@ SELECT
           batch_event_index ASC
       ), 
       '_', 
-      _TABLE_SUFFIX
+      shard
     )
   ) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
- * EXCEPT (event_date)
-FROM ${ref("events_*")}
-WHERE _TABLE_SUFFIX = table_suffix
+ * EXCEPT (event_date, shard)
+FROM ${ref("ga4_process_shard_day")}

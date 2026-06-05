@@ -15,6 +15,6 @@ pre_operations {
 
 SELECT
     *,
-    _TABLE_SUFFIX as table_suffix
+    _TABLE_SUFFIX as shard
 FROM ${ref("events_*")}
 WHERE _TABLE_SUFFIX = t_suffix

@@ -7,7 +7,7 @@ WITH events AS (
 SELECT
     event_date,
     user_id,
-    IF(table_suffix < "${dataform.projectConfig.vars.aggregate_consent_start_date}",
+    IF(shard < "${dataform.projectConfig.vars.aggregate_consent_start_date}",
         'true',
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'is_consented')) as is_consented
 FROM
