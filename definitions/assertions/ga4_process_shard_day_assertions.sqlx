@@ -10,8 +10,8 @@ SELECT
     user_id,
     IF(shard < "${dataform.projectConfig.vars.aggregate_consent_start_date}",
         'true',
-        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'is_consented')) as is_consented
-    ${ref("ga4_process_shard_day")}
+        (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'is_consented')) AS is_consented
+FROM ${ref("ga4_process_shard_day")}
 )
 
 SELECT *
