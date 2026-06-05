@@ -16,6 +16,7 @@ pre_operations {
   SET table_suffix = (
     SELECT shard
     FROM  ${ref("ga4_process_shard_day")} 
+    LIMIT 1
     ); 
 }
 
