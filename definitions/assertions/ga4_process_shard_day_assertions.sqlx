@@ -5,12 +5,12 @@ config {
 
 WITH events AS (
 SELECT
+    shard,
     event_date,
     user_id,
     IF(shard < "${dataform.projectConfig.vars.aggregate_consent_start_date}",
         'true',
         (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'is_consented')) as is_consented
-FROM
     ${ref("ga4_process_shard_day")}
 )
 
