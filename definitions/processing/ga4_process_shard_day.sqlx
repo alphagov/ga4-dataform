@@ -6,8 +6,8 @@ config {
 }
 
 pre_operations {
-  DECLARE _table_suffix STRING DEFAULT "YYYYMMDD";
-  SET _table_suffix = (
+  DECLARE t_suffix STRING DEFAULT "YYYYMMDD";
+  SET t_suffix = (
     SELECT table_name
     FROM  ${ref("ga4_process_shard")} 
     ); 
@@ -17,4 +17,4 @@ SELECT
     *,
     _TABLE_SUFFIX as table_suffix
 FROM ${ref("events_*")}
-WHERE _TABLE_SUFFIX = _table_suffix
+WHERE _TABLE_SUFFIX = t_suffix
