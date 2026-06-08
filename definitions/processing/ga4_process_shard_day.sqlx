@@ -1,0 +1,21 @@
+config {
+  type: "table",
+  tags: [dataform.projectConfig.vars.environment],
+  database: dataform.projectConfig.vars.processing_database,
+  schema: dataform.projectConfig.vars.processing_schema,
+}
+
+pre_operations {
+  DECLARE t_suffix STRING DEFAULT "YYYYMMDD";
+  SET t_suffix = (
+    SELECT table_name
+    FROM  ${ref("ga4_process_shard")}
+    LIMIT 1
+    );
+}
+
+SELECT
+    *,
+    _TABLE_SUFFIX as shard
+FROM ${ref("events_*")}
+WHERE _TABLE_SUFFIX = t_suffix
