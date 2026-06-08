@@ -1,8 +1,8 @@
 config {
   type: "table",
   tags: [dataform.projectConfig.vars.environment],
-  database: dataform.projectConfig.vars.source_database,
-  schema: dataform.projectConfig.vars.source_ga4_prod_schema,
+  database: dataform.projectConfig.vars.processing_database,
+  schema: dataform.projectConfig.vars.processing_schema,
 }
 
 pre_operations {
