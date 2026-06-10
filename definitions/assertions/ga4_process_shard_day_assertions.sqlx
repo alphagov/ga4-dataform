@@ -5,6 +5,4 @@ config {
 
 SELECT *
 FROM ${ref("ga4_process_shard_day")}
-WHERE is_consented = ''
-OR is_consented IS NULL
-OR NOT REGEXP_CONTAINS(is_consented, r'^(true|false)$')
+WHERE is_consented IS NULL
