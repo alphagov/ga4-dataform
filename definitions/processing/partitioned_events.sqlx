@@ -51,5 +51,6 @@ SELECT
     )
   ) AS event_key,
  PARSE_DATE("%Y%m%d", event_date) AS event_date,
- * EXCEPT (event_date, shard)
+ * EXCEPT (event_date, shard, is_consented)
 FROM ${ref("ga4_process_shard_day")}
+WHERE is_consented = true

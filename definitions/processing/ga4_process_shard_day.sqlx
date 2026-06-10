@@ -16,6 +16,10 @@ pre_operations {
 
 SELECT
     *,
+    CASE stream_id
+      WHEN "${dataform.projectConfig.vars.source_ga4_prod_consented_stream}" then true
+      ELSE false
+    END AS is_consented,
     _TABLE_SUFFIX as shard
 FROM ${ref("events_*")}
 WHERE _TABLE_SUFFIX = t_suffix

@@ -13,6 +13,8 @@ vars:
   source_ga4_integration_schema: "analytics_330580593_dev"
   source_ga4_prod_schema: "analytics_330577055_dev"
   source_flattened_dataset:  "flattened_dataset_dev"
+  source_ga4_prod_consented_stream: "4036603819"
+  source_ga4_prod_exemption_stream: "1234567890"
 
   #Processing database & schema(s) 
   processing_database:  "gds-bq-processing-dev"
