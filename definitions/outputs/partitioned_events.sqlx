@@ -11,46 +11,7 @@ config {
   }
 }
 
-pre_operations {
-  DECLARE table_suffix STRING DEFAULT "YYYYMMDD";
-  SET table_suffix = (
-    SELECT shard
-    FROM  ${ref("ga4_process_shard_day")} 
-    LIMIT 1
-    ); 
-}
-
 SELECT
-  IF (table_suffix < "${dataform.projectConfig.vars.partitioned_events_table_suffix}",
-    CONCAT(
-      ROW_NUMBER() OVER (
-        ORDER BY 
-          event_name,
-          event_timestamp, 
-          TO_JSON_STRING(
-            ARRAY(
-              SELECT AS STRUCT key, value
-              FROM UNNEST(event_params)
-              ORDER BY key ASC
-            )
-          ) ASC
-      ), 
-      '_', 
-      shard
-    ),
-    CONCAT(
-      ROW_NUMBER() OVER (
-        ORDER BY 
-          event_bundle_sequence_id,
-          batch_page_id,
-          batch_ordering_id,
-          batch_event_index ASC
-      ), 
-      '_', 
-      shard
-    )
-  ) AS event_key,
- PARSE_DATE("%Y%m%d", event_date) AS event_date,
- * EXCEPT (event_date, shard, is_consented)
+ * EXCEPT (shard, is_consented)
 FROM ${ref("ga4_process_shard_day")}
 WHERE is_consented = true
