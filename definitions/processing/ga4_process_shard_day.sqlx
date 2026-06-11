@@ -30,7 +30,8 @@ SELECT
           ) ASC
       ), 
       '_',
-      stream_id, 
+      stream_id,
+      '_', 
       _TABLE_SUFFIX
     ),
     CONCAT(
@@ -42,7 +43,8 @@ SELECT
           batch_event_index ASC
       ), 
       '_',
-      stream_id, 
+      stream_id,
+      '_', 
       _TABLE_SUFFIX
     )
   ) AS event_key,
