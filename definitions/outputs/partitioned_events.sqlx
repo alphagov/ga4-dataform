@@ -1,0 +1,17 @@
+config {
+  type: "incremental",
+  tags: [dataform.projectConfig.vars.environment],
+  database: dataform.projectConfig.vars.source_database,
+  schema: dataform.projectConfig.vars.source_ga4_prod_schema,
+  dependencies: ["ga4_process_shard_day_assertions"],
+  bigquery: {
+    partitionBy: "event_date",
+    requirePartitionFilter : true,
+    clusterBy: ["event_name"]
+  }
+}
+
+SELECT
+ * EXCEPT (shard, is_consented)
+FROM ${ref("ga4_process_shard_day")}
+WHERE is_consented = true
