@@ -15,11 +15,45 @@ pre_operations {
 }
 
 SELECT
-    *,
-    CASE stream_id
-      WHEN "${dataform.projectConfig.vars.source_ga4_prod_consented_stream}" then true
-      ELSE false
-    END AS is_consented,
-    _TABLE_SUFFIX as shard
+  IF (t_suffix < "${dataform.projectConfig.vars.partitioned_events_table_suffix}",
+    CONCAT(
+      ROW_NUMBER() OVER (
+        ORDER BY 
+          event_name,
+          event_timestamp, 
+          TO_JSON_STRING(
+            ARRAY(
+              SELECT AS STRUCT key, value
+              FROM UNNEST(event_params)
+              ORDER BY key ASC
+            )
+          ) ASC
+      ), 
+      '_',
+      stream_id,
+      '_', 
+      _TABLE_SUFFIX
+    ),
+    CONCAT(
+      ROW_NUMBER() OVER (
+        ORDER BY 
+          event_bundle_sequence_id,
+          batch_page_id,
+          batch_ordering_id,
+          batch_event_index ASC
+      ), 
+      '_',
+      stream_id,
+      '_', 
+      _TABLE_SUFFIX
+    )
+  ) AS event_key,
+  PARSE_DATE("%Y%m%d", event_date) AS event_date,
+  * EXCEPT (event_date),
+  CASE stream_id
+    WHEN "${dataform.projectConfig.vars.source_ga4_prod_consented_stream}" then true
+    ELSE false
+  END AS is_consented,
+  _TABLE_SUFFIX as shard
 FROM ${ref("events_*")}
 WHERE _TABLE_SUFFIX = COALESCE(t_suffix, "${dataform.projectConfig.vars.start_date}")
