@@ -56,4 +56,4 @@ SELECT
   END AS is_consented,
   _TABLE_SUFFIX as shard
 FROM ${ref("events_*")}
-WHERE _TABLE_SUFFIX = t_suffix
+WHERE _TABLE_SUFFIX = COALESCE(t_suffix, "${dataform.projectConfig.vars.start_date}")
