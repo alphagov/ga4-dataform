@@ -4,14 +4,6 @@ config {
   database: dataform.projectConfig.vars.processing_database,
   schema: dataform.projectConfig.vars.processing_schema,
 }
- 
-pre_operations {
-  DECLARE partition_id DATE;
-  SET partition_id = (
-    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
-    FROM  ${ref("ga4_process_partition")} 
-    ); 
-}
 
 SELECT
     event_date AS event_date,
@@ -183,6 +175,4 @@ SELECT
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'traffic_type') AS traffic_type,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'discovery_engine_attribution_token') AS discovery_engine_attribution_token,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'app_promo_banner') AS app_promo_banner,
-  
-FROM ${ref("partitioned_events")}
-WHERE event_date = partition_id
+FROM ${ref("ga4_process_shard_day")}

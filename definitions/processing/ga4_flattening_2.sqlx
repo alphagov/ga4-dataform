@@ -5,14 +5,6 @@ config {
   schema: dataform.projectConfig.vars.processing_schema,
   
 }
- 
-pre_operations {
-  DECLARE partition_id DATE;
-  SET partition_id = (
-    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
-    FROM  ${ref("ga4_process_partition")} 
-    ); 
-}
 
 SELECT DISTINCT
     event_date AS event_date,
@@ -29,5 +21,4 @@ SELECT DISTINCT
     IF(event_name = 'select_item', items.item_name, NULL) AS item_name,
     IF(event_name = 'select_item', items.item_list_index, NULL) AS item_list_index,
     IF(event_name = 'select_item', (SELECT value.string_value FROM UNNEST(item_params) WHERE key='item_content_id'), NULL) AS item_content_id
-FROM ${ref("partitioned_events")}, UNNEST(items) AS items
-WHERE event_date = partition_id
+FROM ${ref("ga4_process_shard_day")}, UNNEST(items) AS items
