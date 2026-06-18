@@ -3,7 +3,6 @@ config {
   tags: [dataform.projectConfig.vars.environment],
   database: dataform.projectConfig.vars.processing_database,
   schema: dataform.projectConfig.vars.processing_schema,
-  dependencies: [ "partitioned_events"]
 }
 
 WITH final_cte AS (
