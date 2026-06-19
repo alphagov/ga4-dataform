@@ -2,7 +2,7 @@ config {
     type: "incremental",
     tags: [dataform.projectConfig.vars.environment],
     database: dataform.projectConfig.vars.source_database,
-    schema: dataform.projectConfig.vars.target_flattened_dataset,
+    schema: dataform.projectConfig.vars.target_aggregated_dataset,
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,
