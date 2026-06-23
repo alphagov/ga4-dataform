@@ -1,6 +1,6 @@
 config {
     type: "incremental",
-    tags: [dataform.projectConfig.vars.environment],
+    tags: [dataform.projectConfig.vars.environment, "aggregate-analytics-selector"],
     database: dataform.projectConfig.vars.source_database,
     schema: dataform.projectConfig.vars.target_flattened_dataset,
     bigquery: {
