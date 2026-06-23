@@ -1,12 +1,13 @@
 config {
     type: "incremental",
-    tags: [dataform.projectConfig.vars.environment],
+    tags: [dataform.projectConfig.vars.environment, "aggregate-analytics-selector"],
     database: dataform.projectConfig.vars.source_database,
     schema: dataform.projectConfig.vars.target_aggregated_dataset,
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,
-    }  
+    },
+    uniqueKey: ["event_date", "cleaned_page_location"]
 }
 
 pre_operations {
@@ -36,7 +37,8 @@ WITH
   WHERE
     event_date = partition_id
     AND NOT status_code BETWEEN 400 AND 599
-    AND NOT REGEXP_CONTAINS(cleaned_page_location, "https:\\/\\/|^/www\\.\\w|\\s|\\p{Han}") ),
+    -- AND NOT REGEXP_CONTAINS(cleaned_page_location, "https:\\/\\/|^/www\\.\\w|\\s|\\p{Han}") TODO: undelete for prod
+    ),
   
   cte2 AS (
   SELECT
@@ -64,7 +66,7 @@ WITH
     AND cte1.event_name = cte2.event_name
     AND cte1.event_timestamp = cte2.max_timestamp)
 
-SELECT 
+SELECT
     event_date,
     cleaned_page_location,
     COUNT(pageviews) AS pageviews,
