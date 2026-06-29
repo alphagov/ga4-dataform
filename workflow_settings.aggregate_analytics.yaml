@@ -1,0 +1,31 @@
+# GA4 Aggregate Analytics PROD
+defaultProject: "ga4-aggregate-analytics" 
+defaultLocation: "europe-west2"
+defaultAssertionDataset: dataform_assertions
+dataformCoreVersion: 3.0.42
+
+vars:
+  # Environment name
+  environment: "prod"
+
+  # Source database & schema(s) 
+  source_database: "ga4-aggregate-analytics"
+  source_ga4_integration_schema: "analytics_123456789"
+  source_ga4_prod_schema: "analytics_123456789"
+  source_ga4_prod_consented_stream: "4036603819"
+  source_ga4_prod_exemption_stream: "1234567890"
+
+  #Processing database & schema(s) 
+  processing_database:  "ga4-aggregate-analytics"
+  processing_schema:  "govuk_ga4_processing"
+
+  # Target database & schema(s) 
+  target_database: "ga4-aggregate-analytics"
+  target_schema: "processing"
+  target_flattened_dataset:  "govuk_ga4_processing"
+  target_aggregated_dataset: "aggregated_dataset"
+
+  # Date variables
+  start_date: "20260617"
+  partitioned_events_table_suffix: "20250101"
+  aggregate_consent_start_date: "20280101"
