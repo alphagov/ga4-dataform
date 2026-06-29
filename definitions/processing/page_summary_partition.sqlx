@@ -1,6 +1,6 @@
 config {
   type: "table",
-  tags: [dataform.projectConfig.vars.environment, "aggregate-analytics-selector"],
+  tags: [dataform.projectConfig.vars.environment],
   database: dataform.projectConfig.vars.processing_database,
   schema: dataform.projectConfig.vars.processing_schema,
   dependencies: [ "partitioned_flattened_events"]
