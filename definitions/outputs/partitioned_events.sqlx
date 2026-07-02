@@ -1,6 +1,6 @@
 config {
   type: "incremental",
-  tags: [dataform.projectConfig.vars.environment],
+  tags: [dataform.projectConfig.vars.environment, "aggregate-analytics"],
   database: dataform.projectConfig.vars.source_database,
   schema: dataform.projectConfig.vars.source_ga4_prod_schema,
   dependencies: ["ga4_process_shard_day_assertions"],
