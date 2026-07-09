@@ -19,12 +19,12 @@ vars:
   #Processing database & schema(s) 
   processing_database:  "gds-bq-processing-dev"
   processing_schema:  "govuk_ga4_processing_dev"
-  processing_flattened_dataset:  "flattened_dataset_dev"
+  processing_flattened_dataset:  "flattened_dataset_dev_ia2954"
 
   # Target database & schema(s) 
   target_database: "gds-bq-processing-dev"
   target_schema: "processing_dev"
-  target_flattened_dataset:  "flattened_dataset_dev"
+  target_flattened_dataset:  "flattened_dataset_dev_ia2954"
 
   # Date variables
   start_date: "20260329"
