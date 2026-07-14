@@ -8,7 +8,7 @@ config {
 
 
 SELECT partition_id
-FROM `${dataform.projectConfig.vars.source_database}.${dataform.projectConfig.vars.source_flattened_dataset}.INFORMATION_SCHEMA.PARTITIONS`
+FROM `${dataform.projectConfig.vars.source_database}.${dataform.projectConfig.vars.target_flattened_dataset}.INFORMATION_SCHEMA.PARTITIONS`
 WHERE table_name = "partitioned_flattened_events"
 AND partition_id != "__NULL__"
 AND partition_id NOT IN (
