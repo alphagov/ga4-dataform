@@ -12,19 +12,18 @@ vars:
   source_database: "ga4-analytics-352613"
   source_ga4_integration_schema: "analytics_330580593"
   source_ga4_prod_schema: "analytics_330577055"
-  source_flattened_dataset:  "flattened_dataset"
   source_ga4_prod_consented_stream: "4036603819"
   source_ga4_prod_exemption_stream: "1234567890"
 
   #Processing database & schema(s) 
   processing_database:  "gds-bq-processing"
   processing_schema:  "govuk_ga4_processing"
-  processing_flattened_dataset:  "flattened_dataset"
 
   # Target database & schema(s) 
   target_database: "gds-bq-reporting"
   target_schema: "processing"
   target_flattened_dataset: "flattened_dataset"
+  target_aggregated_dataset: "flattened_dataset"
 
   # Date variables
   start_date: "19000101"
