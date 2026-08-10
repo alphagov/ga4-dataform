@@ -6,7 +6,15 @@ config {
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,
-    }  
+    },
+    uniqueKey: [
+      "event_date",
+      "event_type",
+      "search_start_page",
+      "search_term",
+      "search_page",
+      "search_destination_page"
+    ]
 }
 
 pre_operations {

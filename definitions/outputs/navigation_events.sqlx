@@ -6,7 +6,17 @@ config {
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,
-    }  
+    },
+    uniqueKey: [
+        "event_date",
+        "event_name",
+        "cleaned_page_location",
+        "canonical_url",
+        "link_domain",
+        "link_url",
+        "type",
+        "outbound"
+    ]
 }
 
 pre_operations {
