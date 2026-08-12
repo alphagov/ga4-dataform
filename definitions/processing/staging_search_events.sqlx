@@ -1,0 +1,43 @@
+config {
+    type: "table",
+    tags: [dataform.projectConfig.vars.environment],
+    database: dataform.projectConfig.vars.processing_database,
+    schema: dataform.projectConfig.vars.processing_schema,
+    assertions: {
+        uniqueKey: [
+        "event_date",
+        "event_type",
+        "search_start_page",
+        "search_term",
+        "search_page",
+        "search_destination_page"
+        ]
+    }
+}
+
+SELECT
+  event_date,
+  'search' AS event_type,
+  cleaned_page_location AS search_start_page,
+  TRIM(search_term) AS search_term,
+  NULL AS search_page,
+  NULL AS search_destination_page,
+  COUNT(*) AS event_count,
+  COUNT(DISTINCT unique_session_id) AS session_count
+FROM ${ref("ga4_augmenting")}
+WHERE event_name = "search"
+GROUP BY ALL
+UNION ALL
+SELECT
+  event_date,
+  'click' AS event_type,
+  cleaned_page_referrer AS search_start_page,
+  TRIM(search_term) AS search_term,
+  cleaned_page_location AS search_page,
+  link_url AS search_destination_page,
+  COUNT(*) AS event_count,
+  COUNT(DISTINCT unique_session_id) AS session_count
+FROM ${ref("ga4_augmenting")}
+WHERE event_name = "select_item"
+  AND document_type = "finder"
+GROUP BY ALL
