@@ -1,0 +1,77 @@
+config {
+    type: "table",
+    tags: [dataform.projectConfig.vars.environment],
+    database: dataform.projectConfig.vars.processing_database,
+    schema: dataform.projectConfig.vars.processing_schema,
+    assertions: {
+        uniqueKey: [
+            "the_date",
+            "cleaned_page_location"
+        ]
+    },
+}
+
+WITH
+  cte1 AS (
+  SELECT
+    event_date,
+    unique_session_ID,
+    cleaned_page_location,
+    event_timestamp,
+    event_name,
+    entrances,
+    search_term,
+    IF(event_name = "page_view",unique_session_ID,NULL) AS pageviews,
+    IF(event_name = "search",unique_session_ID,NULL) AS searches,
+    IF(event_name = "form_submit" AND ui_text = 'Yes',unique_session_ID,NULL) AS useful_yes,
+    IF(event_name = "form_submit" AND ui_text = 'No',unique_session_ID,NULL) AS useful_no,
+    IF(session_engaged='1',unique_session_ID,NULL) AS session_engaged,
+    IF(event_name = 'session_start',unique_session_ID,NULL) AS session_start
+  FROM
+    ${ref("ga4_augmenting")} 
+  WHERE
+    NOT status_code BETWEEN 400 AND 599
+    AND NOT REGEXP_CONTAINS(cleaned_page_location, "https:\\/\\/|^/www\\.\\w|\\s|\\p{Han}") ),
+  
+  cte2 AS (
+  SELECT
+    unique_session_ID,
+    event_name,
+    MAX(event_timestamp) AS max_timestamp
+  FROM
+    cte1
+  WHERE
+    event_name = "page_view"
+  GROUP BY
+    1,
+    2),
+  
+  cte3 AS (
+  SELECT
+    cte1.*,
+    cte2.unique_session_ID AS exits
+  FROM
+    cte1
+  LEFT JOIN
+    cte2
+  ON
+    cte1.unique_session_ID = cte2.unique_session_ID
+    AND cte1.event_name = cte2.event_name
+    AND cte1.event_timestamp = cte2.max_timestamp)
+
+SELECT 
+    CAST(event_date AS STRING) AS the_date,
+    cleaned_page_location,
+    COUNT(DISTINCT pageviews) AS unique_page_views,
+    COUNT(pageviews) AS total_page_views,
+    COUNT(exits) AS exits,
+    SUM(entrances) AS entrances,
+    COUNT(searches) AS total_searches,
+    COUNT(DISTINCT searches) AS unique_search_sessions,
+    COUNT(DISTINCT search_term) AS unique_searchterms,
+    COUNT(useful_yes) AS useful_yes,
+    COUNT(useful_no) AS useful_no,
+    COUNT(DISTINCT session_start) AS session_starts,
+    COUNT(DISTINCT session_engaged) AS session_engaged
+FROM cte3
+GROUP BY ALL

@@ -6,42 +6,26 @@ config {
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,
-    }  
+        updatePartitionFilter: "event_date = partition_event_date"
+    },
+    uniqueKey: [
+      "event_date",
+      "event_type",
+      "search_start_page",
+      "search_term",
+      "search_page",
+      "search_destination_page"
+    ],
+    dependOnDependencyAssertions: true
 }
 
 pre_operations {
-  DECLARE partition_id DATE;
-  SET partition_id = (
-    SELECT COALESCE(PARSE_DATE("%Y%m%d",MAX(partition_id)),PARSE_DATE("%Y%m%d","${dataform.projectConfig.vars.start_date}"))
-    FROM  ${ref("search_event_partition")} 
-    ); 
+  DECLARE partition_event_date DATE;
+  SET partition_event_date = (
+    SELECT MIN(event_date)
+    FROM  ${ref("staging_search_events")}
+    );
 }
 
-SELECT
-  event_date,
-  'search' AS event_type,
-  cleaned_page_location AS search_start_page,
-  TRIM(search_term) AS search_term,
-  NULL AS search_page,
-  NULL AS search_destination_page,
-  COUNT(*) AS event_count,
-  COUNT(DISTINCT unique_session_id) AS session_count
-FROM ${ref("partitioned_flattened_events")}
-WHERE event_date = partition_id
-  AND event_name = "search"
-GROUP BY ALL
-UNION ALL
-SELECT
-  event_date,
-  'click' AS event_type,
-  cleaned_page_referrer AS search_start_page,
-  TRIM(search_term) AS search_term,
-  cleaned_page_location AS search_page,
-  link_url AS search_destination_page,
-  COUNT(*) AS event_count,
-  COUNT(DISTINCT unique_session_id) AS session_count
-FROM ${ref("partitioned_flattened_events")}
-WHERE event_date = partition_id
-  AND event_name = "select_item"
-  AND document_type = "finder"
-GROUP BY ALL
+SELECT *
+FROM ${ref("staging_search_events")}
