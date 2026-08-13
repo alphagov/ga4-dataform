@@ -6,7 +6,7 @@ config {
     bigquery: {
         partitionBy: "event_date",
         requirePartitionFilter : true,
-        updatePartitionFilter: "event_date >= min_event_date"
+        updatePartitionFilter: "event_date = partition_event_date"
     },
     uniqueKey: [
       "event_date",
@@ -20,8 +20,8 @@ config {
 }
 
 pre_operations {
-  DECLARE min_event_date DATE;
-  SET min_event_date = (
+  DECLARE partition_event_date DATE;
+  SET partition_event_date = (
     SELECT MIN(event_date)
     FROM  ${ref("staging_search_events")}
     );
