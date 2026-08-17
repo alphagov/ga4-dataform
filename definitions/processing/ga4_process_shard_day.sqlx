@@ -40,7 +40,10 @@ SELECT
           event_bundle_sequence_id,
           batch_page_id,
           batch_ordering_id,
-          batch_event_index ASC
+          batch_event_index,
+          event_timestamp,
+          event_name,
+          user_pseudo_id ASC
       ), 
       '_',
       stream_id,
