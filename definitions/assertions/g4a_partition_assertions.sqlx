@@ -1,0 +1,26 @@
+config {
+    type: "assertion",
+    tags: [dataform.projectConfig.vars.environment]
+}
+
+SELECT source.partition_date
+FROM (
+  SELECT 
+  PARSE_DATE('%Y%m%d', partition_id) as partition_date 
+  FROM `${dataform.projectConfig.vars.source_database}.${dataform.projectConfig.vars.source_ga4_prod_schema}.INFORMATION_SCHEMA.PARTITIONS`
+  WHERE table_name = 'partitioned_events'
+  AND partition_id < FORMAT_DATE('%Y%m%d',current_date())
+  AND NOT partition_id = "__NULL__"
+  ORDER BY 1 DESC
+  LIMIT 1
+) source
+JOIN (
+  SELECT 
+  PARSE_DATE('%Y%m%d', partition_id) as partition_date
+  FROM `${dataform.projectConfig.vars.source_database}.${dataform.projectConfig.vars.target_flattened_dataset}.INFORMATION_SCHEMA.PARTITIONS`
+  --FROM `gds-bq-processing-dev.flattened_dataset_dev.INFORMATION_SCHEMA.PARTITIONS`
+  WHERE table_name = 'partitioned_flattened_events'
+  AND NOT partition_id = "__NULL__"
+) target
+ON source.partition_date = target.partition_date
+
