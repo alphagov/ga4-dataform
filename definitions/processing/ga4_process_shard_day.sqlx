@@ -3,6 +3,10 @@ config {
   tags: [dataform.projectConfig.vars.environment],
   database: dataform.projectConfig.vars.processing_database,
   schema: dataform.projectConfig.vars.processing_schema,
+  dependencies: [
+    "ga4_partition_assertions",
+    "ga4_process_shard_assertions"
+    ]
 }
 
 pre_operations {
