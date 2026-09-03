@@ -138,5 +138,5 @@ SELECT
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'traffic_type') AS traffic_type,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'discovery_engine_attribution_token') AS discovery_engine_attribution_token,
     (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'app_promo_banner') AS app_promo_banner,
-    (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'gtm_container_version') AS gtm_container_version,
+    (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'gtm_container_version') AS gtm_container_version
 FROM ${ref("ga4_process_shard_day")}
