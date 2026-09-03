@@ -1,0 +1,13 @@
+config {
+    type: "assertion",
+    tags: [dataform.projectConfig.vars.environment],
+}
+
+SELECT 
+*
+FROM ${ref("ga4_process_shard")}
+WHERE 
+    table_name is not null
+AND SAFE.PARSE_DATE('%Y%m%d', table_name) IS NULL
+
+
