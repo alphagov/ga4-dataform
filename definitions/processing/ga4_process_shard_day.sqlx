@@ -38,13 +38,13 @@ SELECT
     CONCAT(
       ROW_NUMBER() OVER (
         ORDER BY 
-          event_bundle_sequence_id,
-          batch_page_id,
-          batch_ordering_id,
-          batch_event_index,
-          event_timestamp,
-          event_name,
-          user_pseudo_id ASC
+          IFNULL(CAST(event_bundle_sequence_id AS STRING), '__NULL__'),
+          IFNULL(CAST(batch_page_id AS STRING), '__NULL__'),
+          IFNULL(CAST(batch_ordering_id AS STRING), '__NULL__'),
+          IFNULL(CAST(batch_event_index AS STRING), '__NULL__'),
+          IFNULL(CAST(event_timestamp AS STRING), '__NULL__'),
+          IFNULL(event_name, '__NULL__'),
+          IFNULL(user_pseudo_id, '__NULL__') ASC
       ), 
       '_',
       stream_id,
